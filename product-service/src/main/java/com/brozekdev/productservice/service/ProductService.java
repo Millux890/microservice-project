@@ -48,4 +48,19 @@ public class ProductService {
                 .build();
     }
 
+    public ProductResponse getProductByName(String name) throws Exception {
+        Product existingProduct;
+        try {
+            existingProduct = productRepository.findFirstByName(name);
+        } catch (Exception e) {
+            throw new Exception("product does not exist");
+        }
+        return ProductResponse.builder()
+                .description(existingProduct.getDescription())
+                .id(existingProduct.getId())
+                .name(existingProduct.getName())
+                .price(existingProduct.getPrice())
+                .build();
+    }
+
 }

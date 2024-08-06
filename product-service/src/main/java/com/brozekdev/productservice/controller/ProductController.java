@@ -28,4 +28,17 @@ public class ProductController {
     public List<ProductResponse> getAllProducts(){
         return productService.getAllProducts();
     }
+
+    @GetMapping("/product/{productName}")
+    @ResponseStatus(HttpStatus.OK)
+    public ProductResponse getProductByName(@PathVariable ("productName") String productName) throws Exception {
+        return productService.getProductByName(productName);
+    }
+
+    @GetMapping("/test")
+    @ResponseStatus(HttpStatus.OK)
+    public Boolean testConnection(){
+        return true;
+    }
+
 }
