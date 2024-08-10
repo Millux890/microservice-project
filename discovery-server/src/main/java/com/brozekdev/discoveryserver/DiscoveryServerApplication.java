@@ -19,7 +19,7 @@ public class DiscoveryServerApplication {
     public FilterRegistrationBean<BasicAuthFilter> basicAuthFilter() {
         FilterRegistrationBean<BasicAuthFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new BasicAuthFilter());
-        registrationBean.addUrlPatterns("/eureka/*");
+        registrationBean.addUrlPatterns("/eureka/**");
         return registrationBean;
     }
 
