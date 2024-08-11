@@ -2,7 +2,6 @@ package com.brozekdev.orderservice.service;
 
 import com.brozekdev.orderservice.dto.OrderLineItemDto;
 import com.brozekdev.orderservice.dto.OrderRequest;
-import com.brozekdev.orderservice.dto.ProductResponse;
 import com.brozekdev.orderservice.event.OrderPlacedEvent;
 import com.brozekdev.orderservice.model.Order;
 import com.brozekdev.orderservice.model.OrderLineItem;
@@ -33,11 +32,13 @@ public class OrderService {
                 .build();
         String productName = "samsung";
 
-        ProductResponse result = webClient.build().get()
-                .uri("lb://product-service/api/products/product/product/" + productName)
-                .retrieve()
-                .bodyToMono(ProductResponse.class)
-                .block();
+        Boolean result = true;
+
+//        ProductResponse result = webClient.build().get()
+//                .uri("lb://product-service/api/products/product/product/" + productName)
+//                .retrieve()
+//                .bodyToMono(ProductResponse.class)
+//                .block();
         if (result != null) {
             System.out.println(result);
             orderRepository.save(order);
