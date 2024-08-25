@@ -1,21 +1,21 @@
 package com.brozekdev.orderservice.dto;
 
+import com.brozekdev.orderservice.model.OrderLineItem;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductResponse {
+public class OrderResponse {
 
-    private String id;
-    private String name;
-    private String description;
-    private BigDecimal price;
+    private List<OrderLineItem> orderLineItemList;
+    private Long clientId;
+    private Long price;
 
 }

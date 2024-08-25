@@ -1,18 +1,16 @@
 package com.brozekdev.orderservice.service;
 
-import com.brozekdev.orderservice.dto.OrderLineItemDto;
 import com.brozekdev.orderservice.dto.OrderRequest;
-import com.brozekdev.orderservice.event.OrderPlacedEvent;
+import com.brozekdev.orderservice.dto.OrderResponse;
 import com.brozekdev.orderservice.model.Order;
 import com.brozekdev.orderservice.model.OrderLineItem;
+import com.brozekdev.orderservice.model.Product;
 import com.brozekdev.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.UUID;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,40 +19,24 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
 
-    private final WebClient.Builder webClient;
 
-    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
+    private final OrderServiceHelper orderServiceHelper;
 
-    public void placeOrder(OrderRequest orderRequest) {
-        Order order = Order.builder()
-                .orderNumber(UUID.randomUUID().toString())
-                .orderLineItemList(orderRequest.getOrderLineItemList().stream().map(this::mapToDto).toList())
-                .build();
-        String productName = "samsung";
-
-        Boolean result = true;
-
-//        ProductResponse result = webClient.build().get()
-//                .uri("lb://product-service/api/products/product/product/" + productName)
-//                .retrieve()
-//                .bodyToMono(ProductResponse.class)
-//                .block();
-        if (result != null) {
-            System.out.println(result);
-            orderRepository.save(order);
-            kafkaTemplate.send("notificationTopic", new OrderPlacedEvent(order.getOrderNumber()));
-            System.out.println("ORDER SENT SUCCESSFULLY");
-        } else {
-            throw new IllegalArgumentException("stop");
-        }
+    public List<OrderResponse> getOrders() {
+        List<Order> orders = orderRepository.findAll();
+        return orders.stream().map(orderServiceHelper::mapToOrderResponse).toList();
     }
 
-    private OrderLineItem mapToDto(OrderLineItemDto orderLineItemDto) {
-        OrderLineItem orderLineItem = new OrderLineItem();
-        orderLineItem.setPrice(orderLineItemDto.getPrice());
-        orderLineItem.setQuantity(orderLineItemDto.getQuantity());
-        orderLineItem.setCode(orderLineItemDto.getCode());
-        return orderLineItem;
+    public void placeOrder(OrderRequest orderRequest) throws Exception {
+        List<OrderLineItem> orderLineItems = orderRequest.getOrderLineItemList().stream().toList();
+        Order order = Order.builder()
+                .price(orderRequest.getPrice())
+                .clientId(orderRequest.getClientId())
+                .build();
+        List<Product> products = orderServiceHelper.getProducts();
+        if (orderServiceHelper.allOrderItemsHaveProducts(orderLineItems, products.stream().toList())) {
+            orderServiceHelper.saveOrder(order, orderLineItems);
+        }
     }
 
 }

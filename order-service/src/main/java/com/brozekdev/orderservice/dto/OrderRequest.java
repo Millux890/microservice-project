@@ -1,11 +1,11 @@
 package com.brozekdev.orderservice.dto;
 
+import com.brozekdev.orderservice.model.OrderLineItem;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -14,8 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderRequest {
 
-    private String orderNumber;
-    private List<OrderLineItemDto> orderLineItemList;
-    private BigDecimal price;
+    private List<OrderLineItem> orderLineItemList;
+    private Long clientId;
+    private Long price;
 
 }

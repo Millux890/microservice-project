@@ -8,11 +8,18 @@
       <jdbc-url>mongodb://localhost:27017</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="keycloak@localhost" uuid="1248f3e0-a7b2-416c-be18-75dbc4e87dab">
+    <data-source source="LOCAL" name="@192.168.0.217" uuid="8efc0060-d793-40b9-ba9c-9bd209d1f00e">
+      <driver-ref>mongo</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.dbschema.MongoJdbcDriver</jdbc-driver>
+      <jdbc-url>mongodb://192.168.0.217:27017</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="microservice-project" uuid="167be21e-d489-400d-ac47-00d0abd07636">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:5433/keycloak</jdbc-url>
+      <jdbc-url>jdbc:postgresql://192.168.0.217:5432/order-service</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

@@ -3,6 +3,7 @@ package com.brozekdev.productservice.controller;
 import com.brozekdev.productservice.dto.ProductRequest;
 import com.brozekdev.productservice.dto.ProductResponse;
 import com.brozekdev.productservice.exceptions.BadRequestException;
+import com.brozekdev.productservice.dto.ProductUpdateRequest;
 import com.brozekdev.productservice.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,16 +30,16 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
-    @GetMapping("/product/{productName}")
+    @GetMapping("/product/{productCode}")
     @ResponseStatus(HttpStatus.OK)
-    public ProductResponse getProductByName(@PathVariable ("productName") String productName) throws Exception {
-        return productService.getProductByName(productName);
+    public ProductResponse getProductByName(@PathVariable ("productCode") String productCode) throws Exception {
+        return productService.getProductByCode(productCode);
     }
 
-    @GetMapping("/test")
-    @ResponseStatus(HttpStatus.OK)
-    public Boolean testConnection(){
-        return true;
+    @PatchMapping("/product/{productCode}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void updateProductByCode(@PathVariable ("productCode") String productCode, @RequestBody ProductUpdateRequest productUpdate) throws Exception {
+        productService.updateProductByCode(productCode, productUpdate);
     }
 
 }
