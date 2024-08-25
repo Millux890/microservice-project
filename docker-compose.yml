@@ -3,6 +3,7 @@ services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.0.1
     container_name: zookeeper
+    restart: always
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -61,13 +62,13 @@ services:
     networks:
       - mynetwork
 
-  postgres-microservice-project:
+  postgres:
     image: postgres:latest
-    container_name: postgres-microservice-project
+    container_name: postgres
     environment:
-      POSTGRES_DB: microservice-project
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -75,19 +76,19 @@ services:
     networks:
       - mynetwork
 
-  postgres-keycloak:
-    image: postgres:latest
-    container_name: postgres-keycloak
-    environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5433:5432"
-    networks:
-      - mynetwork
+#  postgres-keycloak:
+#    image: postgres:latest
+#    container_name: postgres-keycloak
+#    environment:
+#      POSTGRES_DB: keycloak
+#      POSTGRES_USER: admin
+#      POSTGRES_PASSWORD: admin
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#    ports:
+#      - "5433:5432"
+#    networks:
+#      - mynetwork
 
   keycloak:
     image: quay.io/keycloak/keycloak:25.0.2
@@ -98,7 +99,7 @@ services:
       KC_DB: postgres
       KC_DB_USERNAME: admin
       KC_DB_PASSWORD: admin
-      KC_DB_URL: "jdbc:postgresql://postgres-keycloak:5432/keycloak"
+      KC_DB_URL: "jdbc:postgresql://192.168.0.217:5432/keycloak"
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
@@ -106,7 +107,7 @@ services:
     volumes:
       - ./keycloak/realm.json:/opt/keycloak/data/import/realm.json:ro
     depends_on:
-      - postgres-keycloak
+      - postgres
     networks:
       - mynetwork
 
@@ -163,7 +164,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:password@192.168.0.217:8761/eureka
-      - SPRING_DATA_MONGODB_URI=mongodb://192.168.0.217:27017/product-service
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://192.168.0.217:5432/order-service-docker-version
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=192.168.0.217:9092
     depends_on:
       - api-gateway
@@ -182,6 +183,7 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:password@192.168.0.217:8761/eureka
       - SPRING_DATA_MONGODB_URI=mongodb://192.168.0.217:27017/product-service
       - SPRING_JACKSON_DESERIALIZATION_FAIL_ON_UNKNOWN_PROPERTIES=true
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=192.168.0.217:9092
     depends_on:
       - kafka
       - discovery-server

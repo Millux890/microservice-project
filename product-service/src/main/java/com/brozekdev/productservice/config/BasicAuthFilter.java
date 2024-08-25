@@ -1,5 +1,7 @@
 package com.brozekdev.productservice.config;
 
+import com.brozekdev.productservice.exceptions.AuthorizationException;
+import com.brozekdev.productservice.exceptions.ProductError;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -8,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Base64;
-
 @Component
 public class BasicAuthFilter implements Filter {
 
@@ -32,19 +33,27 @@ public class BasicAuthFilter implements Filter {
         String apiGatewayHeader = httpRequest.getHeader(API_GATEWAY_HEADER);
         String authHeader = httpRequest.getHeader(AUTH_HEADER);
 
-        if ((apiGatewayHeader != null) || isAuthorized(authHeader)) {
-            chain.doFilter(request, response);
-        } else {
-            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+        try {
+            if ((apiGatewayHeader != null) || isAuthorized(authHeader)) {
+                chain.doFilter(request, response);
+            } else {
+                httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+            }
+        } catch (AuthorizationException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private boolean isAuthorized(String authHeader) {
-        if (authHeader != null) {
-            String credentials = new String(Base64.getDecoder().decode(authHeader.substring(BASIC_PREFIX.length())));
-            String[] values = credentials.split(":", 2);
-            System.out.println(this.username);
-            return values.length == 2 && username.equals(values[0]) && password.equals(values[1]);
+    private boolean isAuthorized(String authHeader) throws AuthorizationException {
+        try {
+            if (authHeader != null) {
+                String credentials = new String(Base64.getDecoder().decode(authHeader.substring(BASIC_PREFIX.length())));
+                String[] values = credentials.split(":", 2);
+                System.out.println(this.username);
+                return values.length == 2 && username.equals(values[0]) && password.equals(values[1]);
+            }
+        }catch (Exception e){
+            throw new AuthorizationException(ProductError.UNAUTHORIZED.getMessage());
         }
         return false;
     }

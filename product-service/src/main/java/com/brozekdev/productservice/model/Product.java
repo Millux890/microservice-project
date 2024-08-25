@@ -9,8 +9,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.math.BigDecimal;
-
 @Document // mongoDb mapping
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,9 +18,17 @@ public class Product {
 
     @Id
     private String id;
+
+    @Indexed(unique = true)
+    @NotNull
+    private String code;
+
     @Indexed(unique = true)
     @NotNull
     private String name;
+
     private String description;
-    private BigDecimal price;
+
+    private Long price;
 }
+

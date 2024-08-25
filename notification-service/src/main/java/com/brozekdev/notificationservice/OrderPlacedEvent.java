@@ -11,4 +11,6 @@ public class OrderPlacedEvent {
 
     private String orderNumber;
 
+    private Long clientId;
+
 }

@@ -1,25 +1,27 @@
 package com.brozekdev.orderservice.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.math.BigDecimal;
-
-@Document // mongoDb mapping
+import jakarta.persistence.*;
+import lombok.*;
+@Entity
+@Table(name="cst_order_line_items")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
+@Getter
+@Setter
 public class OrderLineItem {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String code;
-    private BigDecimal price;
+
+    private Long price;
+
     private Integer quantity;
 
+    @Column(name = "order_id", nullable = false)
+    private Long orderId;
 }
